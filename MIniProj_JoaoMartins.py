@@ -5,6 +5,8 @@
 from pathlib import Path
 import pandas as pd
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # Configurar opções de exibição para melhor visualização
 pd.set_option('display.max_columns', None)
@@ -300,3 +302,203 @@ print("   Correlação entre características do cliente e comportamento de comp
 print("\n" + "="*80)
 print("\033[1;32mANÁLISE CONCLUÍDA COM SUCESSO!\033[0m")
 print("="*80 + "\n")
+
+# ============================================================================
+# ETAPA 7: VISUALIZAÇÕES E GRÁFICOS (GERAÇÃO DE IMAGENS COM MATPLOTLIB/SEABORN)
+# ============================================================================
+print("\n" + "="*80)
+print("\033[1;31mETAPA 7: GERANDO VISUALIZAÇÕES E GRÁFICOS\033[0m")
+print("="*80)
+
+# Configurar estilo dos gráficos para ficarem mais profissionais
+sns.set_style("whitegrid")
+plt.rcParams['figure.figsize'] = (12, 6)
+plt.rcParams['font.size'] = 10
+
+# Criar pasta para armazenar os gráficos
+caminho_graficos = caminho_atual / "graficos"
+caminho_graficos.mkdir(exist_ok=True)
+print(f"\n✓ Pasta 'graficos' criada em: {caminho_graficos}")
+
+# ===== GRÁFICO 1: VENDAS POR GÊNERO =====
+print("\n\033[33m1. Gerando gráfico: Vendas por Gênero...\033[0m")
+try:
+    fig, ax = plt.subplots(figsize=(10, 6))
+    
+    # Calcula contagem por gênero
+    vendas_genero = df["CL_GENERO"].value_counts().sort_values(ascending=False)
+    cores = ['#FF69B4', '#4169E1']  # Rosa e Azul
+    
+    barras = ax.bar(vendas_genero.index, vendas_genero.values, color=cores, edgecolor='black', linewidth=1.5)
+    
+    # Adicionar valores nas barras
+    for barra in barras:
+        altura = barra.get_height()
+        ax.text(barra.get_x() + barra.get_width()/2., altura,
+                f'{int(altura):,.0f}\n({altura/len(df)*100:.1f}%)',
+                ha='center', va='bottom', fontweight='bold')
+    
+    ax.set_title('Distribuição de Vendas por Gênero do Cliente', fontsize=14, fontweight='bold', pad=20)
+    ax.set_xlabel('Gênero', fontsize=12, fontweight='bold')
+    ax.set_ylabel('Quantidade de Transações', fontsize=12, fontweight='bold')
+    ax.set_ylim(0, max(vendas_genero.values) * 1.1)
+    
+    plt.tight_layout()
+    caminho_imagem = caminho_graficos / "01_vendas_por_genero.png"
+    plt.savefig(caminho_imagem, dpi=300, bbox_inches='tight')
+    print(f"   ✓ Salvo em: {caminho_imagem}")
+    plt.close()
+except Exception as e:
+    print(f"   ✗ Erro: {e}")
+
+# ===== GRÁFICO 2: VENDAS POR CATEGORIA (TOP 10) =====
+print("\n\033[33m2. Gerando gráfico: Vendas por Categoria...\033[0m")
+try:
+    fig, ax = plt.subplots(figsize=(12, 8))
+    
+    # Top 10 categorias
+    vendas_categoria = df["PR_CAT"].value_counts().head(10).sort_values()
+    
+    barras = ax.barh(range(len(vendas_categoria)), vendas_categoria.values, color='#2E86AB', edgecolor='black', linewidth=1.5)
+    
+    # Adicionar valores nas barras
+    for i, barra in enumerate(barras):
+        largura = barra.get_width()
+        ax.text(largura, barra.get_y() + barra.get_height()/2.,
+                f' {int(largura):,.0f} ({largura/len(df)*100:.1f}%)',
+                ha='left', va='center', fontweight='bold')
+    
+    ax.set_yticks(range(len(vendas_categoria)))
+    ax.set_yticklabels(vendas_categoria.index)
+    ax.set_title('Top 10 Categorias de Produtos Mais Vendidas', fontsize=14, fontweight='bold', pad=20)
+    ax.set_xlabel('Quantidade de Transações', fontsize=12, fontweight='bold')
+    ax.set_ylabel('Categoria', fontsize=12, fontweight='bold')
+    ax.invert_yaxis()
+    
+    plt.tight_layout()
+    caminho_imagem = caminho_graficos / "02_vendas_por_categoria.png"
+    plt.savefig(caminho_imagem, dpi=300, bbox_inches='tight')
+    print(f"   ✓ Salvo em: {caminho_imagem}")
+    plt.close()
+except Exception as e:
+    print(f"   ✗ Erro: {e}")
+
+# ===== GRÁFICO 3: DISTRIBUIÇÃO DE NÚMERO DE FILHOS =====
+print("\n\033[33m3. Gerando gráfico: Distribuição de Número de Filhos...\033[0m")
+try:
+    fig, ax = plt.subplots(figsize=(10, 6))
+    
+    # Histograma
+    dados_filhos = df["CL_FHL"].dropna()
+    ax.hist(dados_filhos, bins=5, color='#A23B72', edgecolor='black', linewidth=1.5, alpha=0.7)
+    
+    # Adicionar linhas de estatísticas
+    media = dados_filhos.mean()
+    mediana = dados_filhos.median()
+    
+    ax.axvline(media, color='red', linestyle='--', linewidth=2, label=f'Média: {media:.2f}')
+    ax.axvline(mediana, color='green', linestyle='--', linewidth=2, label=f'Mediana: {mediana:.2f}')
+    
+    ax.set_title('Distribuição do Número de Filhos por Cliente', fontsize=14, fontweight='bold', pad=20)
+    ax.set_xlabel('Número de Filhos', fontsize=12, fontweight='bold')
+    ax.set_ylabel('Frequência (Quantidade de Clientes)', fontsize=12, fontweight='bold')
+    ax.legend(fontsize=11, loc='upper right')
+    ax.grid(axis='y', alpha=0.3)
+    
+    plt.tight_layout()
+    caminho_imagem = caminho_graficos / "03_distribuicao_filhos.png"
+    plt.savefig(caminho_imagem, dpi=300, bbox_inches='tight')
+    print(f"   ✓ Salvo em: {caminho_imagem}")
+    plt.close()
+except Exception as e:
+    print(f"   ✗ Erro: {e}")
+
+# ===== GRÁFICO 4: HEATMAP GÊNERO × CATEGORIA =====
+print("\n\033[33m4. Gerando gráfico: Heatmap Gênero × Categoria...\033[0m")
+try:
+    fig, ax = plt.subplots(figsize=(14, 6))
+    
+    # Criar tabela cruzada (pivot table)
+    tabela_cruzada = pd.crosstab(df["CL_GENERO"], df["PR_CAT"])
+    
+    # Criar heatmap
+    sns.heatmap(tabela_cruzada, annot=True, fmt='d', cmap='YlOrRd', cbar_kws={'label': 'Quantidade'}, ax=ax)
+    
+    ax.set_title('Padrão de Compras: Gênero × Categoria de Produto', fontsize=14, fontweight='bold', pad=20)
+    ax.set_xlabel('Categoria', fontsize=12, fontweight='bold')
+    ax.set_ylabel('Gênero', fontsize=12, fontweight='bold')
+    
+    plt.tight_layout()
+    caminho_imagem = caminho_graficos / "04_heatmap_genero_categoria.png"
+    plt.savefig(caminho_imagem, dpi=300, bbox_inches='tight')
+    print(f"   ✓ Salvo em: {caminho_imagem}")
+    plt.close()
+except Exception as e:
+    print(f"   ✗ Erro: {e}")
+
+# ===== GRÁFICO 5: SÉRIE TEMPORAL - VENDAS POR DATA =====
+print("\n\033[33m5. Gerando gráfico: Série Temporal de Vendas...\033[0m")
+try:
+    fig, ax = plt.subplots(figsize=(14, 6))
+    
+    # Agrupar vendas por data (por mês)
+    vendas_por_data = df.groupby(df['DATA'].dt.to_period('M')).size()
+    vendas_por_data.index = vendas_por_data.index.to_timestamp()
+    
+    ax.plot(vendas_por_data.index, vendas_por_data.values, color='#2E86AB', linewidth=2.5, marker='o', markersize=6)
+    ax.fill_between(vendas_por_data.index, vendas_por_data.values, alpha=0.3, color='#2E86AB')
+    
+    ax.set_title('Série Temporal: Volume de Vendas por Mês', fontsize=14, fontweight='bold', pad=20)
+    ax.set_xlabel('Data', fontsize=12, fontweight='bold')
+    ax.set_ylabel('Quantidade de Transações', fontsize=12, fontweight='bold')
+    ax.grid(True, alpha=0.3)
+    
+    # Rotacionar rótulos do eixo X
+    plt.xticks(rotation=45, ha='right')
+    
+    plt.tight_layout()
+    caminho_imagem = caminho_graficos / "05_serie_temporal.png"
+    plt.savefig(caminho_imagem, dpi=300, bbox_inches='tight')
+    print(f"   ✓ Salvo em: {caminho_imagem}")
+    plt.close()
+except Exception as e:
+    print(f"   ✗ Erro: {e}")
+
+# ===== GRÁFICO 6 (BÔNUS): DISTRIBUIÇÃO DE SEGMENTOS DE CLIENTES =====
+print("\n\033[33m6. Gerando gráfico (BÔNUS): Segmentos de Clientes...\033[0m")
+try:
+    fig, ax = plt.subplots(figsize=(10, 6))
+    
+    # Contagem por segmento
+    vendas_segmento = df["CL_SEG"].value_counts()
+    cores_pizza = plt.cm.Set3(range(len(vendas_segmento)))
+    
+    wedges, texts, autotexts = ax.pie(vendas_segmento.values, labels=vendas_segmento.index, 
+                                        autopct='%1.1f%%', colors=cores_pizza, startangle=90,
+                                        textprops={'fontweight': 'bold'})
+    
+    ax.set_title('Distribuição de Clientes por Segmento', fontsize=14, fontweight='bold', pad=20)
+    
+    plt.tight_layout()
+    caminho_imagem = caminho_graficos / "06_segmentos_clientes.png"
+    plt.savefig(caminho_imagem, dpi=300, bbox_inches='tight')
+    print(f"   ✓ Salvo em: {caminho_imagem}")
+    plt.close()
+except Exception as e:
+    print(f"   ✗ Erro: {e}")
+
+# Resumo final dos gráficos
+print("\n" + "="*80)
+print("\033[1;32m✓ TODOS OS GRÁFICOS FORAM GERADOS COM SUCESSO!\\033[0m")
+print("="*80)
+print(f"\n📁 Imagens salvas em: {caminho_graficos}")
+print("\n📊 Gráficos gerados:")
+print("   1. 01_vendas_por_genero.png - Distribuição por gênero (Gráfico de Barras)")
+print("   2. 02_vendas_por_categoria.png - Top 10 categorias (Gráfico Horizontal)")
+print("   3. 03_distribuicao_filhos.png - Distribuição com média e mediana (Histograma)")
+print("   4. 04_heatmap_genero_categoria.png - Cruzamento de dimensões (Heatmap)")
+print("   5. 05_serie_temporal.png - Tendência de vendas ao longo do tempo (Série Temporal)")
+print("   6. 06_segmentos_clientes.png - Distribuição de segmentos (Gráfico de Pizza)")
+print("\n💡 Dica: Abra os arquivos PNG para incluir em apresentações ou relatórios!")
+print("🎨 Resolução: 300 DPI (alta qualidade para impressão)")
+print("\n" + "="*80 + "\n")
