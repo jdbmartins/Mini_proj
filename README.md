@@ -14,7 +14,9 @@ Este projeto é resultado de **6 semanas de aulas** sobre Python e Análise de D
 - ✅ Exploração de padrões através de agrupamentos
 - ✅ Geração de insights e conclusões
 
-**Nota**: Este é um projeto em fase de aprendizado, portanto pode conter evoluções e melhorias contínuas.
+Este projeto faz parte de uma **etapa avaliativa** do programa do **Governo do Estado de Santa Catarina - SCTEC**, em parceria com o **SENAI**, no **Curso de Manipulação de Dados com Python e SQL**, da **Carreira Tech - Trilha Análise de Dados**.
+
+**Nota importante**: por se tratar de um projeto educacional e de aprendizado, ele pode conter **erros, simplificações, limitações e inconsistências**. Essa é uma etapa de desenvolvimento e aprimoramento contínuo, com foco no aprendizado prático e na aplicação dos conceitos estudados.
 
 ---
 
@@ -279,8 +281,10 @@ Nas próximas semanas/fases, pretendo:
 
 ## 📞 Contato e Créditos
 
-- **Aluno:** João Martins
-- **Instituição:** SENAI (Cursos de Python e Análise de Dados)
+- **Aluno / Autor:** João Daniel Barbosa Martins
+- **Instituição:** SENAI, em parceria com o Governo do Estado de Santa Catarina - SCTEC
+- **Curso:** Manipulação de Dados com Python e SQL
+- **Carreira Tech:** Trilha Análise de Dados
 - **Período:** 6 semanas de aulas práticas
 - **Repositório:** [GitHub - Mini_proj](https://github.com/jdbmartins/Mini_proj)
 
