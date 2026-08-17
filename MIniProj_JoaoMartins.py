@@ -66,7 +66,7 @@ valores_nulos = df.isnull().sum()
 colunas_com_nulos = valores_nulos[valores_nulos > 0]
 
 if len(colunas_com_nulos) == 0:
-    print("Nenhum valor nulo encontrado.")
+    print("Nenhum valor nulo encontrado. Dados tratados na etapa anterior (base já limpa).")
 else:
     print(f"Encontradas {len(colunas_com_nulos)} coluna(s) com valores nulos:")
     for coluna, count in colunas_com_nulos.items():
@@ -103,7 +103,7 @@ if "DATA" in df.columns:
         for data in invalidas:
             print(f"     • {data}")
     else:
-        print("Todas as datas estão no formato DD/MM/YYYY válido!")
+        print("Todas as datas estão no formato DD/MM/YYYY (dia/mês/ano) válido.")
 else:
     print("   (Coluna DATA não encontrada nesta base)")
 
@@ -150,7 +150,7 @@ if "DATA" in df.columns:
     print(f"DATA: Convertida para datetime")
 
 # Imprimo um resumo após limpeza
-print(f"\nDados DEPOIS da limpeza: {len(df):,} linhas ✓")
+print(f"\nDados DEPOIS da limpeza: {len(df):,} linhas.")
 
 # ============================================================================
 # ETAPA 4: ESTATÍSTICAS DESCRITIVAS - COLUNA DE NÚMERO DE FILHOS
@@ -260,8 +260,31 @@ if "PR_CAT" in df.columns:
     print(f"   Categoria mais popular: {categoria_dom}")
 
 print("\n\033[33m4. DISTRIBUIÇÃO TEMPORAL:\033[0m")
-if "DATA" in df.columns and df["DATA"].dtype == 'datetime64[ns]':
-    print(f"   Dados cobrem o período de {df['DATA'].min().date()} a {df['DATA'].max().date()}")
+if "DATA" in df.columns:
+    try:
+        # Verifico se a coluna DATA é do tipo datetime (qualquer variação)
+        if pd.api.types.is_datetime64_any_dtype(df["DATA"]):
+            # Removo valores nulos (NaN) para calcular min e max
+            datas_validas = df["DATA"].dropna()
+            if len(datas_validas) > 0:
+                data_inicio = datas_validas.min().date()
+                data_fim = datas_validas.max().date()
+                print(f"   Dados cobrem o período de {data_inicio} a {data_fim}")
+            else:
+                print("   (Coluna DATA contém apenas valores nulos)")
+        else:
+            print(f"   (Coluna DATA está em formato {df['DATA'].dtype}, tentando converter...)")
+            # Tenta converter mesmo assim
+            df["DATA"] = pd.to_datetime(df["DATA"], format='%d/%m/%Y', errors='coerce')
+            datas_validas = df["DATA"].dropna()
+            if len(datas_validas) > 0:
+                data_inicio = datas_validas.min().date()
+                data_fim = datas_validas.max().date()
+                print(f"   ✓ Convertida com sucesso! Período: {data_inicio} a {data_fim}")
+    except Exception as e:
+        print(f"   (Erro ao analisar datas: {e})")
+else:
+    print("   (Coluna DATA não encontrada)")
 
 print("\n\033[33m5. POSSÍVEIS PROBLEMAS REMANESCENTES:\033[0m")
 print("   Verificar se existem outliers nos preços (dados extremos)")
